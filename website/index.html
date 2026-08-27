@@ -20,6 +20,18 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="css/animations.css">
+
+  <!-- Three.js Import Map (for Earth module) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js",
+      "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.webgpu.js",
+      "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.tsl.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -127,96 +139,125 @@
         <p>Choose a service to learn more, or get in touch for a personalised consultation.</p>
       </div>
       <div class="service-grid stagger-children">
-        <a href="#visa" class="service-item" data-service="Visa Services">
+        <div class="service-item" data-service="Visa Services" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
           </div>
           <div class="service-info">
             <h3>Visa Services</h3>
             <p>Expert guidance for visa applications to destinations worldwide.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#passport" class="service-item" data-service="Passport Assistance">
+        </div>
+        <div class="service-item" data-service="Passport Assistance" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 21v-2a5 5 0 0 1 10 0v2"/></svg>
           </div>
           <div class="service-info">
             <h3>Passport Assistance</h3>
             <p>Help with passport applications, renewals, and documentation.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#contact" class="service-item" data-service="Air Ticketing">
+        </div>
+        <div class="service-item" data-service="Air Ticketing" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.3 3.1-2.3 2.3-2.1-.5c-.4-.1-.8.1-1 .4l-.2.3c-.2.3-.1.7.2.9l2.8 1.7 1.7 2.8c.2.3.6.4.9.2l.3-.2c.3-.2.5-.6.4-1l-.5-2.1 2.3-2.3 3.1 5.3c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
           </div>
           <div class="service-info">
             <h3>Air Ticketing</h3>
             <p>Flight bookings to destinations around the globe.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#work-abroad" class="service-item" data-service="Work Abroad">
+        </div>
+        <div class="service-item" data-service="Work Abroad" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
           <div class="service-info">
             <h3>Work Abroad</h3>
             <p>Consultancy for overseas opportunities and documentation.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#car-hire" class="service-item" data-service="Car Hire">
+        </div>
+        <div class="service-item" data-service="Car Hire" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
           </div>
           <div class="service-info">
             <h3>Car Hire</h3>
             <p>Reliable vehicle hire for business and leisure travel.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#contact" class="service-item" data-service="Hotel Reservations">
+        </div>
+        <div class="service-item" data-service="Hotel Reservations" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/></svg>
           </div>
           <div class="service-info">
             <h3>Hotel Reservations</h3>
             <p>Comfortable stays at handpicked hotels worldwide.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#contact" class="service-item" data-service="Airbnb Reservations">
+        </div>
+        <div class="service-item" data-service="Airbnb Reservations" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
           <div class="service-info">
             <h3>Airbnb</h3>
             <p>Unique accommodations for every type of traveller.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#tourism" class="service-item" data-service="Tourism">
+        </div>
+        <div class="service-item" data-service="Tourism" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 10.33 9.33 11 8.5 11h-5C2.67 11 2 10.33 2 9.5S2.67 8 3.5 8h5c.83 0 1.5.67 1.5 1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
           </div>
           <div class="service-info">
             <h3>Tourism</h3>
             <p>Explore amazing destinations with curated travel experiences.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#contact" class="service-item" data-service="Delivery Services">
+        </div>
+        <div class="service-item" data-service="Delivery Services" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
           </div>
           <div class="service-info">
             <h3>Delivery</h3>
             <p>Reliable delivery solutions for your personal and business needs.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
-        <a href="#contact" class="service-item" data-service="Consultancy">
+        </div>
+        <div class="service-item" data-service="Consultancy" role="button" tabindex="0">
           <div class="service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
           <div class="service-info">
             <h3>Consultancy</h3>
             <p>Professional travel and general consultancy services.</p>
+            <span class="service-cta">Get Assistance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </div>
-        </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== EARTH / GLOBAL TRAVEL ========== -->
+  <section id="earth-section" class="section earth-section" aria-labelledby="earth-heading">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Global Reach</span>
+        <h2 id="earth-heading">Explore Beyond Borders</h2>
+      </div>
+      <div class="earth-layout">
+        <div class="earth-text reveal-left">
+          <h2>Your World, Our Service</h2>
+          <p>From local adventures to international journeys, Lil Tours &amp; Travel helps you move closer to where you want to go. Whether it's a visa to a new country, a flight across the globe, or a dream destination — we make it possible.</p>
+          <a href="#contact" class="btn btn--primary btn--lg" data-whatsapp="">Start Your Journey</a>
+        </div>
+        <div class="earth-canvas-wrap reveal-scale" id="earth-canvas-container" role="img" aria-label="Interactive 3D globe showing Earth">
+        </div>
       </div>
     </div>
   </section>
@@ -587,9 +628,88 @@
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 
+  <!-- ========== ENQUIRY MODAL ========== -->
+  <div id="enquiry-modal" class="enquiry-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="enquiry-modal-title">
+    <div class="enquiry-modal">
+      <div class="enquiry-modal-header">
+        <div class="enquiry-modal-header-text">
+          <h3 id="enquiry-modal-title">Service Enquiry</h3>
+          <p id="enquiry-service-desc"></p>
+        </div>
+        <button class="enquiry-modal-close" aria-label="Close enquiry form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="enquiry-modal-body">
+        <!-- Form State -->
+        <div class="enquiry-form-state">
+          <form id="enquiry-form" class="enquiry-form" novalidate>
+            <input type="hidden" name="service" value="">
+
+            <div class="form-group">
+              <label for="enq-name">Full Name <span class="required-marker" aria-hidden="true">*</span></label>
+              <input type="text" id="enq-name" name="fullName" required autocomplete="name" placeholder="Your full name">
+              <div class="field-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="enq-phone">Phone / WhatsApp <span class="required-marker" aria-hidden="true">*</span></label>
+                <input type="tel" id="enq-phone" name="phone" required autocomplete="tel" placeholder="+256 700 000 000">
+                <div class="field-error" role="alert" aria-live="polite"></div>
+              </div>
+              <div class="form-group">
+                <label for="enq-email">Email (optional)</label>
+                <input type="email" id="enq-email" name="email" autocomplete="email" placeholder="you@example.com">
+                <div class="field-error" role="alert" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="enq-district">District / Area (optional)</label>
+              <input type="text" id="enq-district" name="district" placeholder="e.g. Kampala, Wakiso">
+            </div>
+
+            <!-- Dynamic service-specific fields inserted here -->
+            <div id="enquiry-dynamic-fields"></div>
+
+            <div class="form-group">
+              <label for="enq-notes">Additional Notes (optional)</label>
+              <textarea id="enq-notes" name="notes" rows="3" placeholder="Anything else you'd like us to know..."></textarea>
+            </div>
+
+            <div class="enquiry-form-actions">
+              <button type="submit" class="btn btn--dark btn--lg">Send Enquiry</button>
+              <button type="button" class="btn btn--ghost" id="enquiry-reset">Clear Form</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Success State -->
+        <div class="enquiry-success-state" style="display:none">
+          <div class="enquiry-success-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3>Enquiry Ready</h3>
+          <p>Thank you, <span id="success-user-name">there</span>. Your Lil Tours service enquiry has been prepared. Our team can continue the conversation with you through WhatsApp.</p>
+          <div class="enquiry-success-actions">
+            <a href="#contact" class="btn btn--whatsapp btn--lg" data-whatsapp="" id="success-whatsapp-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Continue on WhatsApp
+            </a>
+            <button type="button" class="btn btn--ghost" id="enquiry-new">Submit Another Enquiry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/navigation.js"></script>
   <script src="js/animations.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/enquiry.js"></script>
+  <script type="module" src="js/earth.js"></script>
 </body>
 </html>

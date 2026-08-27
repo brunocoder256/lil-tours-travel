@@ -1290,6 +1290,360 @@ p {
 }
 
 /* ============================================
+   EARTH / GLOBAL TRAVEL
+   ============================================ */
+.earth-section {
+  background: var(--color-bg-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.earth-section .section-header {
+  position: relative;
+  z-index: 2;
+}
+
+.earth-section .section-label {
+  color: var(--color-accent);
+}
+
+.earth-section .section-header h2 {
+  color: #fff;
+}
+
+.earth-section .section-header p {
+  color: var(--color-text-on-dark-secondary);
+}
+
+.earth-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xl);
+  align-items: center;
+}
+
+.earth-text {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.earth-text h2 {
+  color: #fff;
+  margin-bottom: var(--space-md);
+}
+
+.earth-text p {
+  color: var(--color-text-on-dark-secondary);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-xl);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.earth-canvas-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+#earth-canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#earth-canvas-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fallback (no WebGPU/WebGL) */
+.earth-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.earth-fallback-globe {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #4a90d9 0%,
+    #1a5276 40%,
+    #0d3b5e 70%,
+    #0a2540 100%
+  );
+  box-shadow:
+    inset -20px -20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(77, 178, 255, 0.2),
+    0 0 80px rgba(77, 178, 255, 0.1);
+  animation: fallbackPulse 4s ease-in-out infinite;
+}
+
+@keyframes fallbackPulse {
+  0%, 100% { box-shadow: inset -20px -20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(77, 178, 255, 0.2); }
+  50% { box-shadow: inset -20px -20px 60px rgba(0, 0, 0, 0.5), 0 0 60px rgba(77, 178, 255, 0.3); }
+}
+
+/* ============================================
+   ENQUIRY MODAL
+   ============================================ */
+.enquiry-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.enquiry-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.enquiry-modal {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(20px) scale(0.97);
+  transition: transform var(--transition-base);
+  box-shadow: var(--shadow-xl);
+}
+
+.enquiry-modal-overlay.open .enquiry-modal {
+  transform: translateY(0) scale(1);
+}
+
+.enquiry-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-xl) var(--space-xl) 0;
+  gap: var(--space-md);
+}
+
+.enquiry-modal-header-text h3 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.enquiry-modal-header-text p {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+.enquiry-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--color-bg-warm);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition-fast);
+  color: var(--color-text-secondary);
+}
+
+.enquiry-modal-close:hover {
+  background: var(--color-border);
+}
+
+.enquiry-modal-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.enquiry-modal-body {
+  padding: var(--space-xl);
+}
+
+/* --- Form State --- */
+.enquiry-form-state .enquiry-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.enquiry-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.enquiry-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.enquiry-form label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.required-marker {
+  color: var(--color-accent-dark);
+}
+
+.enquiry-form input,
+.enquiry-form select,
+.enquiry-form textarea {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  background: var(--color-bg);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  width: 100%;
+}
+
+.enquiry-form input:focus,
+.enquiry-form select:focus,
+.enquiry-form textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.enquiry-form input.invalid,
+.enquiry-form select.invalid,
+.enquiry-form textarea.invalid {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+
+.enquiry-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.field-error {
+  font-size: var(--text-xs);
+  color: #c0392b;
+  min-height: 1em;
+  line-height: 1.4;
+}
+
+.enquiry-form-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.enquiry-form-actions .btn {
+  flex: 1;
+}
+
+/* --- Success State --- */
+.enquiry-success-state {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-xl);
+}
+
+.enquiry-success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-lg);
+}
+
+.enquiry-success-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.enquiry-success-state h3 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.enquiry-success-state p {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-lg);
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.enquiry-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+/* --- Service CTA Buttons --- */
+.service-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+  padding: 0.4rem 0.9rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.service-cta:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.service-cta svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============================================
    WHATSAPP FLOATING BUTTON
    ============================================ */
 .whatsapp-float {

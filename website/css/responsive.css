@@ -198,6 +198,88 @@
   }
 }
 
+/* --- Earth Section Responsive --- */
+@media (min-width: 768px) {
+  .earth-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3xl);
+  }
+
+  .earth-text {
+    text-align: left;
+  }
+
+  .earth-text p {
+    margin-left: 0;
+  }
+
+  .earth-canvas-wrap {
+    max-width: 450px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .earth-canvas-wrap {
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .earth-canvas-wrap {
+    max-width: 550px;
+  }
+}
+
+@media (max-width: 480px) {
+  .earth-canvas-wrap {
+    max-width: 280px;
+  }
+}
+
+/* --- Enquiry Modal Responsive --- */
+@media (max-width: 480px) {
+  .enquiry-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .enquiry-modal {
+    max-height: 95vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(100%);
+  }
+
+  .enquiry-modal-overlay.open .enquiry-modal {
+    transform: translateY(0);
+  }
+
+  .enquiry-modal-body {
+    padding: var(--space-lg);
+  }
+
+  .enquiry-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .enquiry-form-actions {
+    flex-direction: column;
+  }
+
+  .enquiry-success-actions {
+    width: 100%;
+  }
+
+  .enquiry-success-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .enquiry-modal {
+    max-width: 600px;
+  }
+}
+
 /* --- Reduced motion --- */
 @media (prefers-reduced-motion: reduce) {
   *,

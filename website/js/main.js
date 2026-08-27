@@ -66,16 +66,13 @@
     yearEl.textContent = new Date().getFullYear();
   }
 
-  // --- Service Enquiry Links ---
-  // Future integration point: these will connect to the registry
-  var serviceLinks = document.querySelectorAll("[data-service]");
-  for (var k = 0; k < serviceLinks.length; k++) {
-    serviceLinks[k].addEventListener("click", function (e) {
-      var service = this.getAttribute("data-service");
-      // For now, scroll to contact or open WhatsApp
-      if (WHATSAPP_NUMBER) {
+  // --- Keyboard support for service cards (role="button") ---
+  var serviceCards = document.querySelectorAll('[data-service][role="button"]');
+  for (var m = 0; m < serviceCards.length; m++) {
+    serviceCards[m].addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        window.open(buildWhatsAppLink(service), "_blank", "noopener");
+        this.click();
       }
     });
   }
