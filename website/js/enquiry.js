@@ -11,6 +11,11 @@
   // --- WhatsApp Configuration ---
   var WHATSAPP_NUMBER = ""; // Replace with actual number
 
+  // --- API Configuration ---
+  // Set to your registry domain in production, e.g. "https://registry.liltours.com"
+  // Leave empty to use same-origin (registry served from same domain)
+  var API_BASE_URL = "";
+
   // --- Service Definitions ---
   var SERVICES = {
     "Visa Services": {
@@ -177,6 +182,18 @@
     var newBtn = modal.querySelector("#enquiry-new");
     if (newBtn) {
       newBtn.addEventListener("click", function () {
+        showFormState();
+        setTimeout(function () {
+          var firstInput = form.querySelector("input:not([type=hidden]), select, textarea");
+          if (firstInput) firstInput.focus();
+        }, 100);
+      });
+    }
+
+    // Retry button (from failure state)
+    var retryBtn = modal.querySelector("#enquiry-retry");
+    if (retryBtn) {
+      retryBtn.addEventListener("click", function () {
         showFormState();
         setTimeout(function () {
           var firstInput = form.querySelector("input:not([type=hidden]), select, textarea");
@@ -435,22 +452,55 @@
 
     if (!validateForm()) return;
 
-    // Collect form data
-    var data = collectFormData();
-
-    // Generate WhatsApp message
-    var message = generateWhatsAppMessage(data);
-
-    // Show success state
-    showSuccessState(data.fullName);
-
-    // Open WhatsApp
-    if (WHATSAPP_NUMBER) {
-      var waUrl = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
-      setTimeout(function () {
-        window.open(waUrl, "_blank", "noopener");
-      }, 600);
+    var submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
     }
+
+    var data = collectFormData();
+    var message = generateWhatsAppMessage(data);
+    var waUrl = WHATSAPP_NUMBER
+      ? "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message)
+      : null;
+
+    var apiUrl = (API_BASE_URL || "") + "/api/enquiries";
+
+    fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+      .then(function (res) {
+        return res.json().then(function (body) {
+          return { status: res.status, body: body };
+        });
+      })
+      .then(function (result) {
+        if (result.status === 201 && result.body.success) {
+          showSuccessState(data.fullName, false);
+          if (waUrl) {
+            setTimeout(function () { window.open(waUrl, "_blank", "noopener"); }, 600);
+          }
+        } else {
+          showSuccessState(data.fullName, true);
+          if (waUrl) {
+            setTimeout(function () { window.open(waUrl, "_blank", "noopener"); }, 600);
+          }
+        }
+      })
+      .catch(function () {
+        showSuccessState(data.fullName, true);
+        if (waUrl) {
+          setTimeout(function () { window.open(waUrl, "_blank", "noopener"); }, 600);
+        }
+      })
+      .finally(function () {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Send Enquiry";
+        }
+      });
   }
 
   // --- Collect Form Data ---
@@ -464,8 +514,7 @@
       destination: "",
       preferredDate: "",
       notes: "",
-      source: "website",
-      createdAt: new Date().toISOString()
+      details: {}
     };
 
     var inputs = form.querySelectorAll("input, select, textarea");
@@ -487,6 +536,8 @@
         data.notes = value;
       }
       else if (value && !["returnDate", "checkoutDate"].includes(name)) {
+        // Capture service-specific fields into details
+        data.details[name] = value;
         var labelEl = input.closest(".form-group");
         var labelText = labelEl ? (labelEl.querySelector("label") || {}).textContent : "";
         labelText = labelText ? labelText.replace(" *", "") : name;
@@ -557,14 +608,23 @@
     }
   }
 
-  function showSuccessState(name) {
+  function showSuccessState(name, failed) {
     var formState = modal.querySelector(".enquiry-form-state");
     var successState = modal.querySelector(".enquiry-success-state");
+    var failureState = modal.querySelector(".enquiry-failure-state");
     var nameEl = modal.querySelector("#success-user-name");
+    var failNameEl = modal.querySelector("#fail-user-name");
 
     if (formState) formState.style.display = "none";
-    if (successState) successState.style.display = "";
-    if (nameEl) nameEl.textContent = name || "there";
+    if (failed) {
+      if (successState) successState.style.display = "none";
+      if (failureState) failureState.style.display = "";
+      if (failNameEl) failNameEl.textContent = name || "there";
+    } else {
+      if (successState) successState.style.display = "";
+      if (failureState) failureState.style.display = "none";
+      if (nameEl) nameEl.textContent = name || "there";
+    }
   }
 
   // --- Expose API ---

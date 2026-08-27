@@ -1568,7 +1568,8 @@ p {
 }
 
 /* --- Success State --- */
-.enquiry-success-state {
+.enquiry-success-state,
+.enquiry-failure-state {
   text-align: center;
   padding: var(--space-2xl) var(--space-xl);
 }
@@ -1579,6 +1580,18 @@ p {
   border-radius: 50%;
   background: rgba(var(--color-primary-rgb), 0.1);
   color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-lg);
+}
+
+.enquiry-failure-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
   display: flex;
   align-items: center;
   justify-content: center;
