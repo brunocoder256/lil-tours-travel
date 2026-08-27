@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useConnection } from "@/components/ConnectionProvider";
+import { getAllOfflineLeads, type OfflineLead } from "@/lib/offline/db";
 
 interface FieldLead {
   id: string;
@@ -17,6 +19,8 @@ interface FieldLead {
   assigned_to_name: string | null;
   next_follow_up_at: string | null;
   created_at: string;
+  sync_status?: "pending" | "syncing" | "synced" | "failed";
+  is_local?: boolean;
 }
 
 const STATUSES = [
@@ -46,6 +50,7 @@ const SERVICES = [
 
 function FieldLeadsListInner() {
   const searchParams = useSearchParams();
+  const { isOnline } = useConnection();
   const [leads, setLeads] = useState<FieldLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -56,29 +61,76 @@ function FieldLeadsListInner() {
   const [service, setService] = useState(searchParams.get("service") || "");
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1", 10));
 
-  const fetchLeads = useCallback(() => {
+  const fetchLeads = useCallback(async () => {
     setLoading(true);
     setError("");
-    const params = new URLSearchParams();
-    if (search) params.set("search", search);
-    if (status) params.set("status", status);
-    if (service) params.set("service", service);
-    params.set("page", String(page));
-    params.set("limit", "25");
 
-    fetch(`/api/registry/field-leads?${params}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed");
-        return res.json();
-      })
-      .then((data) => {
-        setLeads(data.leads || []);
-        setTotal(data.total || 0);
-        setTotalPages(data.totalPages || 1);
-      })
-      .catch(() => setError("Unable to load field leads. Please try again."))
-      .finally(() => setLoading(false));
-  }, [search, status, service, page]);
+    try {
+      // Always fetch server data if online
+      let serverLeads: FieldLead[] = [];
+      if (isOnline) {
+        const params = new URLSearchParams();
+        if (search) params.set("search", search);
+        if (status) params.set("status", status);
+        if (service) params.set("service", service);
+        params.set("page", String(page));
+        params.set("limit", "25");
+
+        const res = await fetch(`/api/registry/field-leads?${params}`);
+        if (res.ok) {
+          const data = await res.json();
+          serverLeads = (data.leads || []).map((l: FieldLead) => ({ ...l, is_local: false }));
+          setTotal(data.total || 0);
+          setTotalPages(data.totalPages || 1);
+        }
+      }
+
+      // Merge with offline leads
+      const offlineLeads = await getAllOfflineLeads();
+      const localLeads: FieldLead[] = offlineLeads
+        .filter((l) => l.sync_status !== "synced")
+        .map((l) => ({
+          id: l.id,
+          full_name: l.full_name,
+          phone: l.phone,
+          district: l.district,
+          service_interest: l.service_interest,
+          status: l.status,
+          source: l.source,
+          created_by_name: "You (offline)",
+          assigned_to_name: null,
+          next_follow_up_at: null,
+          created_at: l.created_at,
+          sync_status: l.sync_status,
+          is_local: true,
+        }));
+
+      // Filter local leads by search/status/service
+      let filteredLocal = localLeads;
+      if (search) {
+        const q = search.toLowerCase();
+        filteredLocal = filteredLocal.filter((l) =>
+          l.full_name.toLowerCase().includes(q) || l.phone.includes(q) || (l.district || "").toLowerCase().includes(q)
+        );
+      }
+      if (status) filteredLocal = filteredLocal.filter((l) => l.status === status);
+      if (service) filteredLocal = filteredLocal.filter((l) => l.service_interest === service);
+
+      // Merge: local pending leads first, then server leads (avoid duplicates)
+      const serverIds = new Set(serverLeads.map((l) => l.id));
+      const uniqueLocal = filteredLocal.filter((l) => !serverIds.has(l.id));
+
+      setLeads([...uniqueLocal, ...serverLeads]);
+      if (!isOnline) {
+        setTotal(uniqueLocal.length);
+        setTotalPages(1);
+      }
+    } catch {
+      setError("Unable to load field leads. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [search, status, service, page, isOnline]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -95,6 +147,25 @@ function FieldLeadsListInner() {
     return (
       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[s] || styles.new}`}>
         {s.replace(/_/g, " ")}
+      </span>
+    );
+  }
+
+  function syncBadge(syncStatus?: string) {
+    if (!syncStatus || syncStatus === "synced") return null;
+    const styles: Record<string, string> = {
+      pending: "bg-amber-50 text-amber-700",
+      syncing: "bg-blue-50 text-blue-700",
+      failed: "bg-red-50 text-red-700",
+    };
+    const labels: Record<string, string> = {
+      pending: "⏳ Pending",
+      syncing: "↻ Syncing",
+      failed: "⚠ Failed",
+    };
+    return (
+      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${styles[syncStatus] || ""}`}>
+        {labels[syncStatus] || syncStatus}
       </span>
     );
   }
@@ -140,7 +211,7 @@ function FieldLeadsListInner() {
 
       {!loading && (
         <p className="text-xs text-zinc-500">
-          {total > 0 ? `Showing ${(page - 1) * 25 + 1}–${Math.min(page * 25, total)} of ${total} leads` : "No leads found"}
+          {total > 0 ? `Showing ${leads.length} of ${total} leads` : "No leads found"}
         </p>
       )}
 
@@ -176,29 +247,24 @@ function FieldLeadsListInner() {
                   <th className="text-left px-4 py-3 font-medium text-zinc-600">District</th>
                   <th className="text-left px-4 py-3 font-medium text-zinc-600">Service</th>
                   <th className="text-left px-4 py-3 font-medium text-zinc-600">Status</th>
-                  <th className="text-left px-4 py-3 font-medium text-zinc-600">Created By</th>
-                  <th className="text-left px-4 py-3 font-medium text-zinc-600">Next Follow-Up</th>
+                  <th className="text-left px-4 py-3 font-medium text-zinc-600">Sync</th>
                   <th className="text-right px-4 py-3 font-medium text-zinc-600">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {leads.map((lead) => (
-                  <tr key={lead.id} className="border-b border-zinc-100 hover:bg-zinc-50">
+                  <tr key={lead.id} className={`border-b border-zinc-100 hover:bg-zinc-50 ${lead.is_local ? "bg-amber-50/50" : ""}`}>
                     <td className="px-4 py-3">
                       <Link href={`/registry/field-leads/${lead.id}`} className="font-medium text-green-700 hover:text-green-800">
                         {lead.full_name}
                       </Link>
+                      {lead.is_local && <span className="text-xs text-amber-600 ml-1">(local)</span>}
                     </td>
                     <td className="px-4 py-3 text-zinc-600">{lead.phone}</td>
                     <td className="px-4 py-3 text-zinc-600">{lead.district || "—"}</td>
                     <td className="px-4 py-3 text-zinc-600 capitalize">{lead.service_interest.replace(/_/g, " ")}</td>
                     <td className="px-4 py-3">{statusBadge(lead.status)}</td>
-                    <td className="px-4 py-3 text-zinc-500">{lead.created_by_name}</td>
-                    <td className="px-4 py-3 text-zinc-500">
-                      {lead.next_follow_up_at
-                        ? new Date(lead.next_follow_up_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })
-                        : "—"}
-                    </td>
+                    <td className="px-4 py-3">{syncBadge(lead.sync_status)}</td>
                     <td className="px-4 py-3 text-right">
                       <Link href={`/registry/field-leads/${lead.id}`} className="text-green-700 hover:text-green-800 text-xs font-medium">View</Link>
                     </td>
@@ -213,21 +279,19 @@ function FieldLeadsListInner() {
               <Link
                 key={lead.id}
                 href={`/registry/field-leads/${lead.id}`}
-                className="block bg-white rounded-lg border border-zinc-200 p-4 hover:border-green-300 transition-colors"
+                className={`block bg-white rounded-lg border border-zinc-200 p-4 hover:border-green-300 transition-colors ${lead.is_local ? "border-l-4 border-l-amber-400" : ""}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-medium text-zinc-900 text-sm">{lead.full_name}</p>
                     <p className="text-xs text-zinc-600 mt-0.5">{lead.phone}</p>
                   </div>
-                  {statusBadge(lead.status)}
+                  <div className="flex flex-col items-end gap-1">
+                    {statusBadge(lead.status)}
+                    {syncBadge(lead.sync_status)}
+                  </div>
                 </div>
                 <p className="text-xs text-zinc-500 mt-1 capitalize">{lead.service_interest.replace(/_/g, " ")}</p>
-                {lead.next_follow_up_at && (
-                  <p className="text-xs text-amber-600 mt-1">
-                    Follow-up: {new Date(lead.next_follow_up_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                  </p>
-                )}
               </Link>
             ))}
           </div>

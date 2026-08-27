@@ -188,6 +188,7 @@ export interface Database {
           last_contacted_at: string | null;
           next_follow_up_at: string | null;
           converted_client_id: string | null;
+          version: number;
         };
         Insert: {
           id?: string;
@@ -207,6 +208,7 @@ export interface Database {
           last_contacted_at?: string | null;
           next_follow_up_at?: string | null;
           converted_client_id?: string | null;
+          version?: number;
         };
         Update: {
           id?: string;
@@ -226,6 +228,7 @@ export interface Database {
           last_contacted_at?: string | null;
           next_follow_up_at?: string | null;
           converted_client_id?: string | null;
+          version?: number;
         };
         Relationships: [
           {
@@ -263,6 +266,7 @@ export interface Database {
           created_by: string;
           created_at: string;
           updated_at: string;
+          version: number;
         };
         Insert: {
           id?: string;
@@ -275,6 +279,7 @@ export interface Database {
           created_by: string;
           created_at?: string;
           updated_at?: string;
+          version?: number;
         };
         Update: {
           id?: string;
@@ -287,6 +292,7 @@ export interface Database {
           created_by?: string;
           created_at?: string;
           updated_at?: string;
+          version?: number;
         };
         Relationships: [
           {
@@ -311,6 +317,42 @@ export interface Database {
             referencedColumns: ["id"];
           }
         ];
+      };
+      sync_operations: {
+        Row: {
+          id: string;
+          operation_id: string;
+          user_id: string;
+          staff_id: string;
+          operation_type: string;
+          entity_type: string;
+          entity_id: string;
+          processed_at: string;
+          result: Json | null;
+        };
+        Insert: {
+          id?: string;
+          operation_id: string;
+          user_id: string;
+          staff_id: string;
+          operation_type: string;
+          entity_type: string;
+          entity_id: string;
+          processed_at?: string;
+          result?: Json | null;
+        };
+        Update: {
+          id?: string;
+          operation_id?: string;
+          user_id?: string;
+          staff_id?: string;
+          operation_type?: string;
+          entity_type?: string;
+          entity_id?: string;
+          processed_at?: string;
+          result?: Json | null;
+        };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
