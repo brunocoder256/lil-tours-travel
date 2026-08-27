@@ -92,6 +92,83 @@ export interface Database {
           }
         ];
       };
+      staff_profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          full_name: string;
+          phone: string | null;
+          role: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          full_name: string;
+          phone?: string | null;
+          role?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          full_name?: string;
+          phone?: string | null;
+          role?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      permissions: {
+        Row: {
+          id: string;
+          key: string;
+          description: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          key: string;
+          description: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          key?: string;
+          description?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      role_permissions: {
+        Row: {
+          role: string;
+          permission_id: string;
+        };
+        Insert: {
+          role: string;
+          permission_id: string;
+        };
+        Update: {
+          role?: string;
+          permission_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey";
+            columns: ["permission_id"];
+            isOneToOne: false;
+            referencedRelation: "permissions";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -99,6 +176,7 @@ export interface Database {
       enquiry_source: "website" | "whatsapp" | "field_marketing" | "referral" | "social_media" | "walk_in" | "other";
       enquiry_status: "new" | "contacted" | "in_progress" | "completed" | "cancelled";
       service_type: "tourism" | "work_abroad" | "visa" | "passport" | "air_ticket" | "hotel" | "airbnb" | "car_hire" | "delivery" | "consultancy";
+      staff_role: "admin" | "supervisor" | "data_entrant" | "field_marketer";
     };
     CompositeTypes: Record<string, never>;
   };
