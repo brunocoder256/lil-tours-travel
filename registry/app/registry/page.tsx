@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth";
-import { getRoleLabel } from "@/lib/permissions";
+import { getRoleLabel, hasPermission } from "@/lib/permissions";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
@@ -20,6 +20,35 @@ export default async function DashboardPage() {
     supabase.from("enquiries").select("id", { count: "exact", head: true }).eq("status", "completed"),
     supabase.from("enquiries").select("id, service, status, source, created_at, clients(full_name)").order("created_at", { ascending: false }).limit(5),
   ]);
+
+  // Field lead stats (if authorized)
+  let fieldLeadStats = { totalLeads: 0, newLeads: 0, overdueFollowUps: 0 };
+  if (hasPermission(profile.role, "field_leads.view")) {
+    const [totalLeads, newLeads] = await Promise.all([
+      supabase.from("field_leads").select("id", { count: "exact", head: true }),
+      supabase.from("field_leads").select("id", { count: "exact", head: true }).eq("status", "new"),
+    ]);
+    fieldLeadStats.totalLeads = totalLeads.count || 0;
+    fieldLeadStats.newLeads = newLeads.count || 0;
+
+    // Overdue follow-ups for this user
+    if (hasPermission(profile.role, "followups.view")) {
+      const { data: profileData } = await supabase
+        .from("staff_profiles")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+      if (profileData) {
+        const { count: overdueCount } = await supabase
+          .from("follow_ups")
+          .select("id", { count: "exact", head: true })
+          .eq("assigned_to", profileData.id)
+          .eq("status", "pending")
+          .lt("due_at", new Date().toISOString());
+        fieldLeadStats.overdueFollowUps = overdueCount || 0;
+      }
+    }
+  }
 
   const stats = {
     totalClients: clientsResult.count || 0,
@@ -98,12 +127,25 @@ export default async function DashboardPage() {
           </svg>
           New Enquiry
         </Link>
+        {hasPermission(profile.role, "field_leads.create") && (
+          <Link href="/registry/field-leads/new" className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md text-sm font-medium hover:bg-purple-700 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            New Field Lead
+          </Link>
+        )}
         <Link href="/registry/clients" className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-300 text-zinc-700 rounded-md text-sm font-medium hover:bg-zinc-50 transition-colors">
           View Clients
         </Link>
         <Link href="/registry/enquiries" className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-300 text-zinc-700 rounded-md text-sm font-medium hover:bg-zinc-50 transition-colors">
           View Enquiries
         </Link>
+        {hasPermission(profile.role, "field_leads.view") && (
+          <Link href="/registry/field-leads" className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-300 text-zinc-700 rounded-md text-sm font-medium hover:bg-zinc-50 transition-colors">
+            View Field Leads
+          </Link>
+        )}
       </div>
 
       {/* Recent Enquiries */}

@@ -5,13 +5,18 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "enquiries.view", "enquiries.create", "enquiries.update",
     "staff.view", "staff.manage",
     "reports.view",
-    "field_leads.create", "field_leads.view",
+    "field_leads.create", "field_leads.view", "field_leads.view_all",
+    "field_leads.update", "field_leads.assign",
+    "followups.view", "followups.create", "followups.update",
   ],
   supervisor: [
     "registry.view",
     "clients.view", "clients.create", "clients.update",
     "enquiries.view", "enquiries.create", "enquiries.update",
     "reports.view",
+    "field_leads.create", "field_leads.view", "field_leads.view_all",
+    "field_leads.update", "field_leads.assign",
+    "followups.view", "followups.create", "followups.update",
   ],
   data_entrant: [
     "registry.view",
@@ -20,6 +25,8 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
   ],
   field_marketer: [
     "registry.view",
+    "field_leads.create", "field_leads.view", "field_leads.update",
+    "followups.view", "followups.create", "followups.update",
   ],
 };
 
@@ -58,6 +65,7 @@ export function getNavItemsForRole(role: string): string[] {
   if (hasPermission(role, "clients.view")) items.push("clients");
   if (hasPermission(role, "enquiries.view")) items.push("enquiries");
   if (hasPermission(role, "field_leads.view")) items.push("field_leads");
+  if (hasPermission(role, "followups.view")) items.push("follow-ups");
   if (hasPermission(role, "reports.view")) items.push("reports");
   if (hasPermission(role, "staff.view")) items.push("staff");
   return items;
