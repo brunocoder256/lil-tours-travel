@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getSession } from "@/lib/auth";
 import RegistrySidebar from "@/components/RegistrySidebar";
 import RegistryHeader from "@/components/RegistryHeader";
@@ -24,6 +25,13 @@ export default async function RegistryLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const hdrs = await headers();
+  const isPublicRoute = hdrs.get("x-is-public-route") === "1";
+
+  if (isPublicRoute) {
+    return <>{children}</>;
+  }
+
   const session = await getSession();
 
   if (!session.user || !session.profile) {
