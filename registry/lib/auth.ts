@@ -30,7 +30,47 @@ export async function getSession() {
     .eq("user_id", user.id)
     .single();
 
-  return { user, profile };
+  if (profile) return { user, profile };
+
+  const autoProvisioned = await autoProvisionProfile(user.id, user.email || "");
+  if (autoProvisioned) return { user, profile: autoProvisioned };
+
+  return { user, profile: null };
+}
+
+async function autoProvisionProfile(userId: string, email: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceKey) return null;
+
+  const admin = createClient<Database>(supabaseUrl, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { count } = await admin
+    .from("staff_profiles")
+    .select("id", { count: "exact", head: true });
+
+  const role = count === 0 ? "admin" : "data_entrant";
+  const displayName = email.split("@")[0] || "Staff Member";
+
+  const { data: profile, error } = await admin
+    .from("staff_profiles")
+    .insert({
+      user_id: userId,
+      full_name: displayName,
+      role,
+      is_active: true,
+    })
+    .select("*")
+       .single();
+
+  if (error) {
+    console.error("[auth] Auto-provision profile failed:", error);
+    return null;
+  }
+
+  return profile;
 }
 
 export async function requireAuth() {
