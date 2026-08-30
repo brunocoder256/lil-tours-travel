@@ -68,5 +68,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/registry/:path*"],
+  matcher: ["/registry/:path*", "/api/registry/:path*"],
 };
