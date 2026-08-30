@@ -1,24 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { isValidRole } from "@/lib/permissions";
-
-async function verifyAdmin(userId: string) {
-  const supabase = createServerClient();
-  const { data: profile } = await supabase
-    .from("staff_profiles")
-    .select("role, is_active")
-    .eq("user_id", userId)
-    .single();
-  if (!profile || !profile.is_active || profile.role !== "admin") return null;
-  return profile;
-}
+import { hasPermission, isValidRole } from "@/lib/permissions";
 
 export async function GET(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = await verifyAdmin(userId);
-  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const userRole = req.headers.get("x-user-role");
+  if (!userId || !userRole) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!hasPermission(userRole, "staff.view")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   try {
     const supabase = createServerClient();
@@ -55,10 +47,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = await verifyAdmin(userId);
-  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const userRole = req.headers.get("x-user-role");
+  if (!userId || !userRole) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!hasPermission(userRole, "staff.manage")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   let body: unknown;
   try {

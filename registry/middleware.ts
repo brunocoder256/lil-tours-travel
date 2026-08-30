@@ -54,6 +54,16 @@ export async function middleware(req: NextRequest) {
 
   res.headers.set("x-user-id", user.id);
 
+  const { data: profile } = await supabase
+    .from("staff_profiles")
+    .select("role")
+    .eq("user_id", user.id)
+    .single();
+
+  if (profile) {
+    res.headers.set("x-user-role", profile.role);
+  }
+
   return res;
 }
 

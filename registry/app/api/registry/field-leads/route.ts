@@ -40,7 +40,14 @@ export async function GET(request: NextRequest) {
 
   // Ownership filter: field marketers see only own leads unless view_all
   if (view === "my" || (!hasPermission(userRole, "field_leads.view_all") && userRole === "field_marketer")) {
-    query = query.eq("created_by", userId);
+    const { data: profile } = await supabase
+      .from("staff_profiles")
+      .select("id")
+      .eq("user_id", userId)
+      .single();
+    if (profile) {
+      query = query.eq("created_by", profile.id);
+    }
   }
 
   if (search) {

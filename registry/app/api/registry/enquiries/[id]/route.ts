@@ -1,29 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { hasPermission } from "@/lib/permissions";
 
 const VALID_STATUSES = ["new","contacted","in_progress","completed","cancelled"];
-
-async function verifyStaff(userId: string) {
-  const supabase = createServerClient();
-  const { data: profile } = await supabase
-    .from("staff_profiles")
-    .select("role, is_active")
-    .eq("user_id", userId)
-    .single();
-  if (!profile || !profile.is_active) return null;
-  return profile;
-}
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const profile = await verifyStaff(userId);
-  if (!profile) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (!["admin", "supervisor", "data_entrant"].includes(profile.role)) {
+  const userRole = req.headers.get("x-user-role");
+  if (!userId || !userRole) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!hasPermission(userRole, "enquiries.view")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -54,11 +44,11 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const profile = await verifyStaff(userId);
-  if (!profile) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (!["admin", "supervisor", "data_entrant"].includes(profile.role)) {
+  const userRole = req.headers.get("x-user-role");
+  if (!userId || !userRole) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!hasPermission(userRole, "enquiries.update")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

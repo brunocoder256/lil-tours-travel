@@ -1,25 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { hasPermission } from "@/lib/permissions";
 import { normalizePhone } from "@/lib/validation";
-
-async function verifyStaff(userId: string) {
-  const supabase = createServerClient();
-  const { data: profile } = await supabase
-    .from("staff_profiles")
-    .select("role, is_active")
-    .eq("user_id", userId)
-    .single();
-  if (!profile || !profile.is_active) return null;
-  return profile;
-}
 
 export async function GET(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const profile = await verifyStaff(userId);
-  if (!profile) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (!["admin", "supervisor", "data_entrant"].includes(profile.role)) {
+  const userRole = req.headers.get("x-user-role");
+  if (!userId || !userRole) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!hasPermission(userRole, "clients.view")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -63,11 +53,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const profile = await verifyStaff(userId);
-  if (!profile) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (!["admin", "supervisor", "data_entrant"].includes(profile.role)) {
+  const userRole = req.headers.get("x-user-role");
+  if (!userId || !userRole) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!hasPermission(userRole, "clients.create")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
