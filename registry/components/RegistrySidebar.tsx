@@ -56,7 +56,7 @@ export default function RegistrySidebar({ role, fullName }: Props) {
 
         <nav className="flex-1 p-3 space-y-1">
           {navItems.map((item) => {
-            const href = item === "dashboard" ? "/registry" : `/registry/${item}`;
+            const href = item === "dashboard" ? "/registry" : `/registry/${item.replace(/_/g, "-")}`;
             const isActive = item === "dashboard"
               ? pathname === "/registry"
               : pathname.startsWith(href);
