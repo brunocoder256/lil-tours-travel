@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database";
 import { NextRequest, NextResponse } from "next/server";
 
-const PROTECTED_PREFIXES = ["/registry"];
+const PROTECTED_PREFIXES = ["/registry", "/api/registry"];
 const PUBLIC_PREFIXES = ["/registry/login"];
 
 function isProtectedRoute(pathname: string): boolean {
