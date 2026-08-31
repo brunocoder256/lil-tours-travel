@@ -69,7 +69,7 @@ export async function PATCH(
   }
 
   const b = body as Record<string, unknown>;
-  const updateFields: Record<string, unknown> = {};
+  const updateFields: { status?: string; notes?: string | null; cancel_reason?: string | null; approved_by?: string; approved_at?: string } = {};
 
   if (typeof b.status === "string") {
     const s = b.status.trim().toLowerCase();
