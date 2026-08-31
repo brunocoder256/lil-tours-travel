@@ -311,3 +311,122 @@ export function validateFollowUp(input: unknown): { ok: boolean; errors: string[
     data: { fieldLeadId, dueAt, notes: notes || null },
   };
 }
+
+// ============================================
+// Loan Request Validation
+// ============================================
+
+const VALID_EMPLOYMENT_STATUSES = ["employed", "self_employed", "business_owner", "student", "unemployed", "other"] as const;
+
+export interface LoanPayload {
+  fullName: string;
+  phone: string;
+  email?: string;
+  nationalId?: string;
+  district?: string;
+  loanAmount: number;
+  loanPurpose: string;
+  repaymentPeriod: number;
+  employmentStatus: string;
+  monthlyIncome?: number;
+  incomeSource?: string;
+  collateralDescription?: string;
+  guarantorName?: string;
+  guarantorPhone?: string;
+}
+
+export interface LoanValidationResult {
+  ok: boolean;
+  errors: string[];
+  data?: {
+    fullName: string;
+    phone: string;
+    email: string | null;
+    nationalId: string | null;
+    district: string | null;
+    loanAmount: number;
+    loanPurpose: string;
+    repaymentPeriod: number;
+    monthlyPayment: number;
+    employmentStatus: string;
+    monthlyIncome: number | null;
+    incomeSource: string | null;
+    collateralDescription: string | null;
+    guarantorName: string | null;
+    guarantorPhone: string | null;
+  };
+}
+
+export function validateLoan(input: unknown): LoanValidationResult {
+  const errors: string[] = [];
+  if (!input || typeof input !== "object") {
+    return { ok: false, errors: ["Invalid request body"] };
+  }
+
+  const body = input as Record<string, unknown>;
+
+  const fullName = typeof body.fullName === "string" ? body.fullName.trim() : "";
+  if (!fullName) errors.push("Full name is required");
+  else if (fullName.length > MAX_NAME_LENGTH) errors.push(`Full name must be under ${MAX_NAME_LENGTH} characters`);
+
+  const rawPhone = typeof body.phone === "string" ? body.phone.trim() : "";
+  if (!rawPhone) errors.push("Phone number is required");
+  else if (rawPhone.length > MAX_PHONE_LENGTH) errors.push(`Phone must be under ${MAX_PHONE_LENGTH} characters`);
+
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  if (email && email.length > MAX_EMAIL_LENGTH) errors.push(`Email must be under ${MAX_EMAIL_LENGTH} characters`);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push("Invalid email format");
+
+  const nationalId = typeof body.nationalId === "string" ? body.nationalId.trim() : "";
+  const district = typeof body.district === "string" ? body.district.trim() : "";
+
+  const loanAmount = typeof body.loanAmount === "number" ? body.loanAmount : parseFloat(String(body.loanAmount));
+  if (!loanAmount || loanAmount <= 0) errors.push("Loan amount must be greater than 0");
+  else if (loanAmount > 100000000) errors.push("Loan amount is too large");
+
+  const loanPurpose = typeof body.loanPurpose === "string" ? body.loanPurpose.trim() : "";
+  if (!loanPurpose) errors.push("Loan purpose is required");
+  else if (loanPurpose.length > MAX_NOTES_LENGTH) errors.push(`Loan purpose must be under ${MAX_NOTES_LENGTH} characters`);
+
+  const repaymentPeriod = typeof body.repaymentPeriod === "number" ? body.repaymentPeriod : parseInt(String(body.repaymentPeriod), 10);
+  if (!repaymentPeriod || repaymentPeriod < 1) errors.push("Repayment period must be at least 1 month");
+  else if (repaymentPeriod > 60) errors.push("Repayment period cannot exceed 60 months");
+
+  const monthlyPayment = loanAmount && repaymentPeriod ? Math.ceil(loanAmount / repaymentPeriod) : 0;
+
+  const employmentStatus = typeof body.employmentStatus === "string" ? body.employmentStatus.trim().toLowerCase().replace(/\s+/g, "_") : "";
+  if (!employmentStatus) errors.push("Employment status is required");
+  else if (!VALID_EMPLOYMENT_STATUSES.includes(employmentStatus as typeof VALID_EMPLOYMENT_STATUSES[number])) {
+    errors.push(`Invalid employment status: ${employmentStatus}`);
+  }
+
+  const monthlyIncome = typeof body.monthlyIncome === "number" ? body.monthlyIncome : parseFloat(String(body.monthlyIncome));
+  const incomeSource = typeof body.incomeSource === "string" ? body.incomeSource.trim() : "";
+  const collateralDescription = typeof body.collateralDescription === "string" ? body.collateralDescription.trim() : "";
+  const guarantorName = typeof body.guarantorName === "string" ? body.guarantorName.trim() : "";
+  const guarantorPhone = typeof body.guarantorPhone === "string" ? body.guarantorPhone.trim() : "";
+
+  if (errors.length > 0) return { ok: false, errors };
+
+  return {
+    ok: true,
+    errors: [],
+    data: {
+      fullName,
+      phone: rawPhone,
+      email: email || null,
+      nationalId: nationalId || null,
+      district: district || null,
+      loanAmount,
+      loanPurpose,
+      repaymentPeriod,
+      monthlyPayment,
+      employmentStatus,
+      monthlyIncome: isNaN(monthlyIncome) ? null : monthlyIncome,
+      incomeSource: incomeSource || null,
+      collateralDescription: collateralDescription || null,
+      guarantorName: guarantorName || null,
+      guarantorPhone: guarantorPhone || null,
+    },
+  };
+}

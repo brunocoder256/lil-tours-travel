@@ -318,6 +318,152 @@ export interface Database {
           }
         ];
       };
+      loan_requests: {
+        Row: {
+          id: string;
+          client_id: string;
+          full_name: string;
+          phone: string;
+          email: string | null;
+          national_id: string | null;
+          district: string | null;
+          loan_amount: number;
+          loan_purpose: string;
+          repayment_period: number;
+          monthly_payment: number;
+          employment_status: string;
+          monthly_income: number | null;
+          income_source: string | null;
+          collateral_description: string | null;
+          guarantor_name: string | null;
+          guarantor_phone: string | null;
+          status: string;
+          notes: string | null;
+          source: string;
+          approved_by: string | null;
+          approved_at: string | null;
+          cancel_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          client_id: string;
+          full_name: string;
+          phone: string;
+          email?: string | null;
+          national_id?: string | null;
+          district?: string | null;
+          loan_amount: number;
+          loan_purpose: string;
+          repayment_period: number;
+          monthly_payment: number;
+          employment_status: string;
+          monthly_income?: number | null;
+          income_source?: string | null;
+          collateral_description?: string | null;
+          guarantor_name?: string | null;
+          guarantor_phone?: string | null;
+          status?: string;
+          notes?: string | null;
+          source?: string;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          cancel_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          client_id?: string;
+          full_name?: string;
+          phone?: string;
+          email?: string | null;
+          national_id?: string | null;
+          district?: string | null;
+          loan_amount?: number;
+          loan_purpose?: string;
+          repayment_period?: number;
+          monthly_payment?: number;
+          employment_status?: string;
+          monthly_income?: number | null;
+          income_source?: string | null;
+          collateral_description?: string | null;
+          guarantor_name?: string | null;
+          guarantor_phone?: string | null;
+          status?: string;
+          notes?: string | null;
+          source?: string;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          cancel_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "loan_requests_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "loan_requests_approved_by_fkey";
+            columns: ["approved_by"];
+            isOneToOne: false;
+            referencedRelation: "staff_profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      loan_payments: {
+        Row: {
+          id: string;
+          loan_id: string;
+          period_label: string;
+          period_type: string;
+          expected_amount: number;
+          paid_amount: number;
+          status: string;
+          paid_at: string | null;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          loan_id: string;
+          period_label: string;
+          period_type?: string;
+          expected_amount: number;
+          paid_amount?: number;
+          status?: string;
+          paid_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          loan_id?: string;
+          period_label?: string;
+          period_type?: string;
+          expected_amount?: number;
+          paid_amount?: number;
+          status?: string;
+          paid_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "loan_payments_loan_id_fkey";
+            columns: ["loan_id"];
+            isOneToOne: false;
+            referencedRelation: "loan_requests";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       sync_operations: {
         Row: {
           id: string;
@@ -365,6 +511,7 @@ export interface Database {
       field_lead_status: "new" | "contacted" | "interested" | "follow_up" | "converted" | "not_interested" | "lost";
       field_lead_source: "field_marketing" | "office_visit" | "referral" | "event" | "social_media" | "phone" | "whatsapp" | "other";
       followup_status: "pending" | "completed" | "missed" | "cancelled";
+      loan_status: "pending" | "approved" | "cancelled" | "paid";
     };
     CompositeTypes: Record<string, never>;
   };
