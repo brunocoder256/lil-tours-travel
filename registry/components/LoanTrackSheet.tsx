@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -30,7 +30,19 @@ function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-UG", { style: "currency", currency: "UGX", minimumFractionDigits: 0 }).format(amount);
 }
 
-export default function LoanTrackSheet() {
+export default function LoanTrackSheetWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center py-12">
+        <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoanTrackSheet />
+    </Suspense>
+  );
+}
+
+function LoanTrackSheet() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialLoanId = searchParams.get("loan") || "";
