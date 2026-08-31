@@ -146,6 +146,10 @@ export async function requireApiAuth(req?: NextRequest) {
         .single();
       profile = p;
     }
+
+    if (!profile && user) {
+      profile = await autoProvisionProfile(user.id, user.email || "");
+    }
   } else {
     const session = await getSession();
     user = session.user;
