@@ -114,5 +114,5 @@ export async function requireAuth() {
 export async function requireApiAuth() {
   const session = await getSession();
   if (!session.user || !session.profile) return null;
-  return { userId: session.user.id, userRole: session.profile.role };
+  return { userId: session.user.id, profileId: session.profile.id, userRole: session.profile.role };
 }

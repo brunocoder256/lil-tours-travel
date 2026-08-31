@@ -11,7 +11,7 @@ export async function GET(
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { userId, userRole } = auth;
+  const { userRole } = auth;
   if (!hasPermission(userRole, "loans.view")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -53,7 +53,7 @@ export async function PATCH(
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { userId, userRole } = auth;
+  const { profileId, userRole } = auth;
   if (!hasPermission(userRole, "loans.update")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -95,12 +95,10 @@ export async function PATCH(
   try {
     const supabase = createServerClient();
 
-    // If approving, set approved_by and approved_at, and create payment schedule
     if (updateFields.status === "approved") {
-      updateFields.approved_by = userId;
+      updateFields.approved_by = profileId;
       updateFields.approved_at = new Date().toISOString();
 
-      // Get loan details for payment schedule
       const { data: loan } = await supabase
         .from("loan_requests")
         .select("loan_amount, repayment_period, monthly_payment")
