@@ -4,6 +4,28 @@ import { validateEnquiry, normalizePhone } from "@/lib/validation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import type { Json } from "@/lib/types/database";
 
+const ALLOWED_ORIGINS = [
+  "https://lil-tours-travel-2u84.vercel.app",
+  "https://liltoursandtravel.com",
+  "https://www.liltoursandtravel.com",
+  "http://localhost:3000",
+  "http://localhost:8080",
+];
+
+function getCorsHeaders(req: NextRequest): Record<string, string> {
+  const origin = req.headers.get("origin") || "";
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+}
+
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, { status: 204, headers: getCorsHeaders(req) });
+}
+
 function getClientIp(req: NextRequest): string {
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
@@ -13,6 +35,7 @@ function getClientIp(req: NextRequest): string {
 }
 
 export async function POST(req: NextRequest) {
+  const corsHeaders = getCorsHeaders(req);
   const ip = getClientIp(req);
   const rate = checkRateLimit(ip);
 
@@ -20,7 +43,7 @@ export async function POST(req: NextRequest) {
     console.warn(`[enquiries] Rate limited: ${ip}`);
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
-      { status: 429, headers: { "Retry-After": String(Math.ceil(rate.retryAfterMs / 1000)) } }
+      { status: 429, headers: { ...corsHeaders, "Retry-After": String(Math.ceil(rate.retryAfterMs / 1000)) } }
     );
   }
 
@@ -28,17 +51,17 @@ export async function POST(req: NextRequest) {
   try {
     const text = await req.text();
     if (text.length > 50000) {
-      return NextResponse.json({ error: "Payload too large" }, { status: 400 });
+      return NextResponse.json({ error: "Payload too large" }, { status: 400, headers: corsHeaders });
     }
     body = JSON.parse(text);
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400, headers: corsHeaders });
   }
 
   const result = validateEnquiry(body);
   if (!result.ok) {
     console.warn(`[enquiries] Validation failed:`, result.errors);
-    return NextResponse.json({ error: "Validation failed", details: result.errors }, { status: 400 });
+    return NextResponse.json({ error: "Validation failed", details: result.errors }, { status: 400, headers: corsHeaders });
   }
 
   const data = result.data!;
@@ -84,7 +107,7 @@ export async function POST(req: NextRequest) {
         console.error(`[enquiries] Client creation failed:`, createError);
         return NextResponse.json(
           { error: "Failed to process enquiry. Please try WhatsApp." },
-          { status: 500 }
+          { status: 500, headers: corsHeaders }
         );
       }
       clientId = newClient.id;
@@ -110,7 +133,7 @@ export async function POST(req: NextRequest) {
       console.error(`[enquiries] Enquiry creation failed:`, enquiryError);
       return NextResponse.json(
         { error: "Failed to save enquiry. Please try WhatsApp." },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -118,13 +141,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { success: true, enquiryId: enquiry.id },
-      { status: 201 }
+      { status: 201, headers: corsHeaders }
     );
   } catch (err) {
     console.error(`[enquiries] Unexpected error:`, err);
     return NextResponse.json(
       { error: "Something went wrong. Please try WhatsApp." },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

@@ -70,10 +70,9 @@
   var REGISTRY_API = "https://lil-tours-travel-registry-system.vercel.app/api/enquiries";
 
   var contactForm = document.getElementById("contact-form");
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
+  var contactSubmitBtn = document.getElementById("contact-submit");
+  if (contactForm && contactSubmitBtn) {
+    contactSubmitBtn.addEventListener("click", function () {
       var name = (document.getElementById("name") || {}).value || "";
       var phone = (document.getElementById("phone") || {}).value || "";
       var email = (document.getElementById("email") || {}).value || "";
@@ -85,11 +84,8 @@
         return;
       }
 
-      var submitBtn = contactForm.querySelector('button[type="submit"]');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Sending...";
-      }
+      contactSubmitBtn.disabled = true;
+      contactSubmitBtn.textContent = "Sending...";
 
       var data = {
         fullName: name.trim(),
@@ -122,10 +118,8 @@
           alert("Unable to submit enquiry right now. Please try again or contact us via WhatsApp.");
         })
         .finally(function () {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Send Enquiry";
-          }
+          contactSubmitBtn.disabled = false;
+          contactSubmitBtn.textContent = "Send Enquiry";
         });
     });
   }
