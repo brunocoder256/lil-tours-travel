@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { hasPermission } from "@/lib/permissions";
+import { hasPermission } from "@/lib/permissions"
+import { requireApiAuth } from "@/lib/auth";
 import { validateFollowUp } from "@/lib/validation";
 
 export async function GET(request: NextRequest) {
-  const userId = request.headers.get("x-user-id");
-  const userRole = request.headers.get("x-user-role");
-  if (!userId || !userRole) {
+  const auth = await requireApiAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { userId, userRole } = auth;
   if (!hasPermission(userRole, "followups.view")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -96,11 +97,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const userId = request.headers.get("x-user-id");
-  const userRole = request.headers.get("x-user-role");
-  if (!userId || !userRole) {
+  const auth = await requireApiAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { userId, userRole } = auth;
   if (!hasPermission(userRole, "followups.create")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

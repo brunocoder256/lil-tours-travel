@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { hasPermission } from "@/lib/permissions";
+import { hasPermission } from "@/lib/permissions"
+import { requireApiAuth } from "@/lib/auth";
 
 const VALID_SERVICES = ["tourism","work_abroad","visa","passport","air_ticket","hotel","airbnb","car_hire","delivery","consultancy"];
 const VALID_STATUSES = ["new","contacted","in_progress","completed","cancelled"];
 const VALID_SOURCES = ["website","whatsapp","field_marketing","referral","social_media","walk_in","other"];
 
 export async function GET(req: NextRequest) {
-  const userId = req.headers.get("x-user-id");
-  const userRole = req.headers.get("x-user-role");
-  if (!userId || !userRole) {
+  const auth = await requireApiAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { userId, userRole } = auth;
   if (!hasPermission(userRole, "enquiries.view")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -89,11 +90,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const userId = req.headers.get("x-user-id");
-  const userRole = req.headers.get("x-user-role");
-  if (!userId || !userRole) {
+  const auth = await requireApiAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { userId, userRole } = auth;
   if (!hasPermission(userRole, "enquiries.create")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

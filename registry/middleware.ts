@@ -46,26 +46,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  let userRole: string | null = null;
-  const { data: profile } = await supabase
-    .from("staff_profiles")
-    .select("role")
-    .eq("user_id", user.id)
-    .single();
-
-  if (profile) {
-    userRole = profile.role;
-  }
-
-  const reqHeaders = new Headers(req.headers);
-  reqHeaders.set("x-user-id", user.id);
-  if (userRole) reqHeaders.set("x-user-role", userRole);
-
-  const res = NextResponse.next({ request: { headers: reqHeaders } });
-  res.headers.set("x-user-id", user.id);
-  if (userRole) res.headers.set("x-user-role", userRole);
-
-  return res;
+  return NextResponse.next();
 }
 
 export const config = {

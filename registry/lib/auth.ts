@@ -110,3 +110,9 @@ export async function requireAuth() {
   if (!session.user || !session.profile) return null;
   return session;
 }
+
+export async function requireApiAuth() {
+  const session = await getSession();
+  if (!session.user || !session.profile) return null;
+  return { userId: session.user.id, userRole: session.profile.role };
+}

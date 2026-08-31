@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { requireApiAuth } from "@/lib/auth";
 import { hasPermission } from "@/lib/permissions";
 
 const VALID_STATUSES = ["pending", "completed", "missed", "cancelled"];
@@ -8,11 +9,11 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = request.headers.get("x-user-id");
-  const userRole = request.headers.get("x-user-role");
-  if (!userId || !userRole) {
+  const auth = await requireApiAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { userId, userRole } = auth;
   if (!hasPermission(userRole, "followups.update")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
