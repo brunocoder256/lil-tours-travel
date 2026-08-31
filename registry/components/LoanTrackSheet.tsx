@@ -111,7 +111,8 @@ function LoanTrackSheet() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentId, paidAmount: amount }),
       });
-      if (!res.ok) throw new Error("Failed to update payment");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details || data.error || "Failed to update payment");
       setEditAmounts((prev) => ({ ...prev, [paymentId]: "" }));
       fetchPayments();
     } catch (err: unknown) {

@@ -37,15 +37,16 @@ export async function PATCH(
     const supabase = createServerClient();
 
     // Get the payment record
-    const { data: payment } = await supabase
+    const { data: payment, error: lookupError } = await supabase
       .from("loan_payments")
       .select("id, loan_id, expected_amount")
       .eq("id", paymentId)
       .eq("loan_id", id)
       .single();
 
-    if (!payment) {
-      return NextResponse.json({ error: "Payment not found" }, { status: 404 });
+    if (lookupError || !payment) {
+      console.error("[api/registry/loans/:id/payments] Lookup error:", JSON.stringify(lookupError));
+      return NextResponse.json({ error: "Payment not found", details: lookupError?.message }, { status: 404 });
     }
 
     const status = paidAmount >= payment.expected_amount ? "paid" : paidAmount > 0 ? "partial" : "pending";
@@ -63,8 +64,11 @@ export async function PATCH(
       .single();
 
     if (error) {
-      console.error("[api/registry/loans/:id/payments] Update error:", error);
-      return NextResponse.json({ error: "Failed to update payment" }, { status: 500 });
+      console.error("[api/registry/loans/:id/payments] Update error:", JSON.stringify(error));
+      return NextResponse.json(
+        { error: "Failed to update payment", details: error.message || error.code || "Unknown error" },
+        { status: 500 }
+      );
     }
 
     // Check if all payments are paid
@@ -82,7 +86,10 @@ export async function PATCH(
 
     return NextResponse.json({ payment: updated });
   } catch (err) {
-    console.error("[api/registry/loans/:id/payments] Error:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("[api/registry/loans/:id/payments] Error:", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { error: "Internal server error", details: err instanceof Error ? err.message : "Unknown" },
+      { status: 500 }
+    );
   }
 }
