@@ -9,7 +9,7 @@
   "use strict";
 
   // --- WhatsApp Configuration ---
-  var WHATSAPP_NUMBER = ""; // Replace with actual number
+  var WHATSAPP_NUMBER = "256759327843";
 
   // --- API Configuration ---
   // Set to your registry domain in production, e.g. "https://registry.liltours.com"

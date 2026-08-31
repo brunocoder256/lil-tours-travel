@@ -7,7 +7,7 @@
 
   // --- WhatsApp Configuration ---
   // Replace with the actual WhatsApp number (country code without + or spaces)
-  var WHATSAPP_NUMBER = ""; // e.g. "256700000000"
+  var WHATSAPP_NUMBER = "256759327843";
 
   function buildWhatsAppLink(service) {
     if (!WHATSAPP_NUMBER) {
