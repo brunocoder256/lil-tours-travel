@@ -530,14 +530,18 @@
         </div>
         <div class="contact-form-wrap reveal-right">
           <h3>Send us a message</h3>
-          <form class="contact-form" action="#" method="post">
+          <form class="contact-form" id="contact-form" action="#" method="post">
             <div class="form-group">
               <label for="name">Full Name</label>
               <input type="text" id="name" name="name" required autocomplete="name">
             </div>
             <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" required autocomplete="tel" placeholder="+256 700 000 000">
+            </div>
+            <div class="form-group">
               <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" required autocomplete="email">
+              <input type="email" id="email" name="email" autocomplete="email">
             </div>
             <div class="form-group">
               <label for="service">Service of Interest</label>

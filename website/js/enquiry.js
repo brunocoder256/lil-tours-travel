@@ -14,7 +14,7 @@
   // --- API Configuration ---
   // Set to your registry domain in production, e.g. "https://registry.liltours.com"
   // Leave empty to use same-origin (registry served from same domain)
-  var API_BASE_URL = "";
+  var API_BASE_URL = "https://lil-tours-travel-registry-system.vercel.app";
 
   // --- Service Definitions ---
   var SERVICES = {
@@ -254,7 +254,7 @@
 
     // Set service field in hidden input
     var serviceInput = form.querySelector('input[name="service"]');
-    if (serviceInput) serviceInput.value = serviceName;
+    if (serviceInput) serviceInput.value = service.id;
 
     // Build dynamic fields
     buildDynamicFields(service.fields);

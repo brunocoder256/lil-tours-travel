@@ -66,6 +66,70 @@
     yearEl.textContent = new Date().getFullYear();
   }
 
+  // --- Contact Form Submission (to Registry API) ---
+  var REGISTRY_API = "https://lil-tours-travel-registry-system.vercel.app/api/enquiries";
+
+  var contactForm = document.getElementById("contact-form");
+  if (contactForm) {
+    contactForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var name = (document.getElementById("name") || {}).value || "";
+      var phone = (document.getElementById("phone") || {}).value || "";
+      var email = (document.getElementById("email") || {}).value || "";
+      var service = (document.getElementById("service") || {}).value || "";
+      var message = (document.getElementById("message") || {}).value || "";
+
+      if (!name.trim() || !phone.trim() || !service || !message.trim()) {
+        alert("Please fill in your name, phone, service, and message.");
+        return;
+      }
+
+      var submitBtn = contactForm.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
+      }
+
+      var data = {
+        fullName: name.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        service: service.replace(/-/g, "_"),
+        notes: message.trim()
+      };
+
+      fetch(REGISTRY_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+        .then(function (res) {
+          return res.json().then(function (body) {
+            return { status: res.status, body: body };
+          });
+        })
+        .then(function (result) {
+          if (result.status === 201 && result.body.success) {
+            alert("Thank you! Your enquiry has been submitted. Our team will be in touch soon.");
+            contactForm.reset();
+          } else {
+            var errMsg = (result.body && result.body.error) || "Something went wrong. Please try again.";
+            alert(errMsg);
+          }
+        })
+        .catch(function () {
+          alert("Unable to submit enquiry right now. Please try again or contact us via WhatsApp.");
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Send Enquiry";
+          }
+        });
+    });
+  }
+
   // --- Keyboard support for service cards (role="button") ---
   var serviceCards = document.querySelectorAll('[data-service][role="button"]');
   for (var m = 0; m < serviceCards.length; m++) {
