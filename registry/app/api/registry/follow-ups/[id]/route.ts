@@ -9,7 +9,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(request);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -6,7 +6,7 @@ import { requireApiAuth } from "@/lib/auth";
 const VALID_LOAN_STATUSES = ["pending", "approved", "cancelled", "paid"];
 
 export async function GET(req: NextRequest) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

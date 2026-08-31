@@ -9,7 +9,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -44,7 +44,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

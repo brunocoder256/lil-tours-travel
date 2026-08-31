@@ -4,7 +4,7 @@ import { hasPermission } from "@/lib/permissions"
 import { requireApiAuth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(request);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

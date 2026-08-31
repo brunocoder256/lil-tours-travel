@@ -5,7 +5,7 @@ import { requireApiAuth } from "@/lib/auth";
 import { validateFollowUp } from "@/lib/validation";
 
 export async function GET(request: NextRequest) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(request);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(request);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

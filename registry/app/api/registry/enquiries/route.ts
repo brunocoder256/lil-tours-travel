@@ -8,7 +8,7 @@ const VALID_STATUSES = ["new","contacted","in_progress","completed","cancelled"]
 const VALID_SOURCES = ["website","whatsapp","field_marketing","referral","social_media","walk_in","other"];
 
 export async function GET(req: NextRequest) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireApiAuth();
+  const auth = await requireApiAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
