@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
-  const res = NextResponse.next();
+  const reqHeaders = new Headers(req.headers);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -34,12 +34,8 @@ export async function middleware(req: NextRequest) {
       persistSession: true,
       storage: {
         getItem: (key: string) => req.cookies.get(key)?.value ?? null,
-        setItem: (key: string, value: string) => {
-          res.cookies.set(key, value, { path: "/", httpOnly: true, sameSite: "lax" });
-        },
-        removeItem: (key: string) => {
-          res.cookies.set(key, "", { path: "/", maxAge: 0 });
-        },
+        setItem: (key: string, value: string) => {},
+        removeItem: (key: string) => {},
       },
     },
   });
@@ -52,7 +48,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  res.headers.set("x-user-id", user.id);
+  reqHeaders.set("x-user-id", user.id);
 
   const { data: profile } = await supabase
     .from("staff_profiles")
@@ -61,10 +57,10 @@ export async function middleware(req: NextRequest) {
     .single();
 
   if (profile) {
-    res.headers.set("x-user-role", profile.role);
+    reqHeaders.set("x-user-role", profile.role);
   }
 
-  return res;
+  return NextResponse.next({ request: { headers: reqHeaders } });
 }
 
 export const config = {
